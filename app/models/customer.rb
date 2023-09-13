@@ -9,8 +9,8 @@ class Customer < ApplicationRecord
 
   def self.top_customer
     Customer
-      .joins(invoices: :transactions)
-      .select('customers.*, count(transactions.id) as transaction_count')
+    .select('customers.*, count(transactions.id) as transaction_count')
+    .joins(invoices: :transactions)
       .where('transactions.result = ?', 1)
       .group('customers.id')
       .order(transaction_count: :desc)

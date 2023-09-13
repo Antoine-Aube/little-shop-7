@@ -118,14 +118,44 @@ RSpec.feature "the admin index page" do
         within (".incomplete_invoices") do
           expect(page).to have_content("Incomplete Invoices")
           expect(page).to_not have_content(invoice_3.id)
-          expect(page).to have_content("Invoice Number #{invoice_1.id} - #{invoice_1.created_at}")
-          expect(page).to have_content("Invoice Number #{invoice_2.id} - #{invoice_2.created_at}")
+          expect(page).to have_content("Invoice Number #{invoice_1.id}")
+          expect(page).to have_content("Invoice Number #{invoice_2.id}")
           expect(page).to have_link("#{invoice_2.id}")
           click_link("#{invoice_2.id}")
           expect(page).to have_current_path(admin_invoice_path(invoice_2.id))
+        end
+      end
+    end
+  end
+
+  describe 'when visiting /admin' do
+    describe 'US23 shows a section for incomplete invoices ordered by oldest invoice"' do
+      it "is formatted to 'Monday, July 18, 2019'" do
+        customer_1 = Customer.create(first_name: "Joey", last_name:"One")
+        merchant_1 = Merchant.create(name: "merchant1")
+        item_1 = Item.create(name: "item1", description: "1", unit_price: 2145, merchant: merchant_1)
+        item_2 = Item.create(name: "item2", description: "1", unit_price: 2145, merchant: merchant_1)
+    
+        invoice_1 = Invoice.create(customer: customer_1, status: 0)
+        invoice_2 = Invoice.create(customer: customer_1, status: 1)
+        invoice_3 = Invoice.create(customer: customer_1, status: 2)
+    
+        invoice_item_1 = InvoiceItem.create(item: item_1, invoice: invoice_1, quantity: 23, unit_price: 34343, status: 0)
+        invoice_item_2 = InvoiceItem.create(item: item_1, invoice: invoice_1, quantity: 23, unit_price: 34343, status: 1)
+        invoice_item_3 = InvoiceItem.create(item: item_1, invoice: invoice_2, quantity: 23, unit_price: 34343, status: 2)
+        invoice_item_4 = InvoiceItem.create(item: item_1, invoice: invoice_2, quantity: 23, unit_price: 34343, status: 0)
+        invoice_item_5 = InvoiceItem.create(item: item_1, invoice: invoice_3, quantity: 23, unit_price: 34343, status: 2)
+        invoice_item_6 = InvoiceItem.create(item: item_2, invoice: invoice_3, quantity: 23, unit_price: 34343, status: 2)
+        
+        visit admin_path
+        within (".incomplete_invoices") do
+          expect(page).to have_content("Incomplete Invoices")
+          expect(page).to_not have_content(invoice_3.id)
+          expect(page).to_not have_content(invoice_3.id)
+          expect(page).to have_content("Invoice Number #{invoice_1.id} - #{invoice_1.created_at.strftime("%A, %B %d, %Y")}")
+          expect(page).to have_content("Invoice Number #{invoice_2.id} - #{invoice_2.created_at.strftime("%A, %B %d, %Y")}")
 
         end
-
       end
     end
   end

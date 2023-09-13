@@ -14,7 +14,7 @@ RSpec.describe Invoice, type: :model do
   end
 
   describe '#incomplete_invoices' do
-    it "shows a list of invoices that have not yet shipped" do
+    it "shows a list of invoices that have not yet shipped and orders by oldest invoice by created_at" do
       customer_1 = Customer.create(first_name: "Joey", last_name:"One")
 
       merchant_1 = Merchant.create(name: "merchant1")
@@ -32,7 +32,7 @@ RSpec.describe Invoice, type: :model do
       invoice_item_5 = InvoiceItem.create(item: item_1, invoice: invoice_3, quantity: 23, unit_price: 34343, status: 2)
       invoice_item_6 = InvoiceItem.create(item: item_2, invoice: invoice_3, quantity: 23, unit_price: 34343, status: 2)
       
-      expect(Invoice.incomplete_invoices).to eq([invoice_1, invoice_2])
+      expect(Invoice.incomplete_invoices).to eq([invoice_1,invoice_2])
     end
   end
 end

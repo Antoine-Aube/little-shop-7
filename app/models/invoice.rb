@@ -16,9 +16,8 @@ class Invoice < ApplicationRecord
     .group('invoices.id')
     .order(:id)
   end
-
+  
   def self.group_by_id
     group(:id)
   end
-
 end
