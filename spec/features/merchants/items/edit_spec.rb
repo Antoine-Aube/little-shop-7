@@ -4,9 +4,9 @@ RSpec.describe 'merchant item edit page' do
   before :each do
     @merchant_1 = Merchant.create!(name: "Bracelets 'n Stuff")
     @merchant_2 = Merchant.create!(name: "Necklaces 'n Stuff")
-    @item_1 = @merchant_1.items.create!(name: "Bracelet", description: "Shiny", unit_price: 1000)
-    @item_2 = @merchant_1.items.create!(name: "Necklace", description: "Shiny", unit_price: 2000)
-    @item_3 = @merchant_2.items.create!(name: "Ring", description: "Shiny", unit_price: 3000)
+    @item_1 = @merchant_1.items.create!(name: "Bracelet", description: "Shiny", unit_price: 1000, status: 0)
+    @item_2 = @merchant_1.items.create!(name: "Necklace", description: "Shiny", unit_price: 2000, status: 0)
+    @item_3 = @merchant_2.items.create!(name: "Ring", description: "Shiny", unit_price: 3000, status: 0)
   end 
 
   describe 'when visiting /merchants/merchant_id/items/:item_id/edit' do

@@ -29,7 +29,7 @@ RSpec.feature "the merchant show/dashboard page" do
     it "US3 displays the top 5 customers with successful transactions" do
       merchant_1 = Merchant.create(name: "Merchant 1")
 
-      item_1 = Item.create(name: "Item 1", description: "Item 1 description", unit_price: 100, merchant_id: merchant_1.id)
+      item_1 = Item.create(name: "Item 1", description: "Item 1 description", unit_price: 100, merchant_id: merchant_1.id, status: 1)
   
       customer_1 = Customer.create(first_name: "Erica", last_name:"One")
       customer_2 = Customer.create(first_name: "Noelle", last_name:"Two")

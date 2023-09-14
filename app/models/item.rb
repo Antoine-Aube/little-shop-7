@@ -7,7 +7,8 @@ class Item < ApplicationRecord
   validates :description, presence: true 
   validates :unit_price, presence: true
   validates :merchant_id, presence: true
-  # validates :status, presence: true
+  validates :status, presence: true
+  
   enum :status,["disabled", "enabled"]
 
   def formatted_unit_price
