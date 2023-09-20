@@ -1,18 +1,10 @@
-<div class="table-container">
-  <table class="header">
-    <tbody>
-      <tr>
-        <td><h3>Admin Dashboard</h3></td>
-      </tr>
-    </tbody>
-  </table>
-  <table class="links">
-    <tbody>
-      <tr>
-        <td><%= link_to "Dashboard", admin_path %>
+<div class="table-container nav">
+  <div class="header">
+    <h3>Admin Dashboard</h3>
+  </div>
+  <div class="links">
+        <%= link_to "Dashboard", admin_path %>
         <%= link_to "Merchants", admin_merchants_path %>
-        <%= link_to "Invoices", admin_invoices_path %></td>
-      </tr>
-    </tbody>
-  </table>
+        <%= link_to "Invoices", admin_invoices_path %>
+  </div>
 </div>
