@@ -10,17 +10,19 @@
       <th>Discount Name</th>
       <th>Percentage off</th>
       <th>Item Threshold</th>
+      <th>Delete Discount</th>
     </tr>
   </thead>
   </tbody>
   <% @discounts.each do |discount| %>
-  <section id="discount-<%= discount.id%>">
     <tr>
+  <section id="discount-<%= discount.id%>">
     <td><%= link_to "#{discount.name}", merchant_bulk_discount_path(@merchant, discount)  %></td>
     <td><%= number_to_percentage(discount.percentage * 100, precision: 0 ) %></td>
     <td><%= discount.item_threshold %></td>
-    <tr>
+    <td><%= button_to "Delete Discount", merchant_bulk_discount_path(@merchant, discount), method: :delete, data: {turbo: false} %></td>
   </section>
+    <tr>
   <% end %>
   </tbody>
 </table>
