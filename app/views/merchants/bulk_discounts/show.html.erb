@@ -1,0 +1,4 @@
+<center><h1><%= @discount.name %></h1><center>
+
+<p>Percentage off: <%= number_to_percentage(@discount.percentage * 100, precision: 0 ) %></p>
+<p>Item Threshold: <%= @discount.item_threshold %></p>
