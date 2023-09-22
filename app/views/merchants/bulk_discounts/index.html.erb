@@ -1,5 +1,5 @@
 <center><h1>Discounts for <%= @merchant.name %></h1><center>
-
+<%= button_to "Create a new discount", new_merchant_bulk_discount_path(@merchant), method: :get %>
 <% if @merchant.bulk_discounts.empty? %>
   <p>There are no discounts for this merchant.</p>
 <% else %>
