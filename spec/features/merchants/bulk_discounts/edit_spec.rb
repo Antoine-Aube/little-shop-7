@@ -22,7 +22,8 @@ RSpec.describe 'Edit Bulk Discount' do
 
       fill_in(:name, with: "10% off 10 items")
       fill_in(:percentage, with: 0.10)
-      filll_in(:item_threshold, with: 5)
+      fill_in(:item_threshold, with: 5)
+      click_button("Update Discount")
 
       expect(current_path).to eq(merchant_bulk_discount_path(@merchant, @discount_1))
       expect(page).to have_content("10% off 10 items")
@@ -38,7 +39,8 @@ RSpec.describe 'Edit Bulk Discount' do
 
       fill_in(:name, with: "")
       fill_in(:percentage, with: 0.10)
-      filll_in(:item_threshold, with: 5)
+      fill_in(:item_threshold, with: 5)
+      click_button("Update Discount")
 
       expect(page).to have_content("Discount not updated: Required information missing.")
     end

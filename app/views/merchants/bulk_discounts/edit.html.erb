@@ -1,0 +1,11 @@
+<center><h1>Edit <%= @discount.name %>
+
+<center><%= form_with url: merchant_bulk_discount_path(@merchant, @discount), method: :patch, data: {turbo: false} do |f| %>
+  <%= f.label :name %>
+  <%= f.text_field :name, value: "#{@discount.name}" %><br>
+  <%= f.label :percentage %>
+  <%= f.number_field :percentage, value: "#{@discount.percentage}", step: 0.01 %><br>
+  <%= f.label :item_threshold %>
+  <%= f.number_field :item_threshold, value: "#{@discount.item_threshold}" %><br>
+  <%= f.submit "Update Discount" %>
+<% end %></center>
