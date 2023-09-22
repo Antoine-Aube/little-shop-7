@@ -14,11 +14,13 @@
   </thead>
   </tbody>
   <% @discounts.each do |discount| %>
+  <section id="discount-<%= discount.id%>">
     <tr>
     <td><%= discount.name %></td>
     <td><%= number_to_percentage(discount.percentage * 100, precision: 0 ) %></td>
     <td><%= discount.item_threshold %></td>
     <tr>
+  </section>
   <% end %>
   </tbody>
 </table>
