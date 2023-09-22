@@ -13,3 +13,7 @@ Invoice.destroy_all
 Transaction.destroy_all
 InvoiceItem.destroy_all
 Rake::Task["load_csv:all"].invoke
+
+@discount_1 = BulkDiscount.create!(name: "20% off!", percentage: 0.20, item_threshold: 10, merchant_id: 10)
+@discount_2 = BulkDiscount.create!(name: "30% off!", percentage: 0.30, item_threshold: 15, merchant_id: 10)
+@discount_3 = BulkDiscount.create!(name: "40% off!", percentage: 0.40, item_threshold: 20, merchant_id: 10)

@@ -1,0 +1,30 @@
+<center><h1>Discounts for <%= @merchant.name %></h1><center>
+<%= button_to "Create a new discount", new_merchant_bulk_discount_path(@merchant), method: :get %>
+<% if @merchant.bulk_discounts.empty? %>
+  <p>There are no discounts for this merchant.</p>
+<% else %>
+<div class= "table-container">
+<table class="table-style">
+  <thead>
+    <tr>
+      <th>Discount Name</th>
+      <th>Percentage off</th>
+      <th>Item Threshold</th>
+      <th>Delete Discount</th>
+    </tr>
+  </thead>
+  </tbody>
+  <% @discounts.each do |discount| %>
+    <tr>
+  <section id="discount-<%= discount.id%>">
+    <td><%= link_to "#{discount.name}", merchant_bulk_discount_path(@merchant, discount)  %></td>
+    <td><%= number_to_percentage(discount.percentage * 100, precision: 0 ) %></td>
+    <td><%= discount.item_threshold %></td>
+    <td><%= button_to "Delete Discount", merchant_bulk_discount_path(@merchant, discount), method: :delete, data: {turbo: false} %></td>
+  </section>
+    <tr>
+  <% end %>
+  </tbody>
+</table>
+</div>
+<% end %>
