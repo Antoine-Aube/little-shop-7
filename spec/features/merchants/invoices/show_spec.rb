@@ -84,7 +84,31 @@ RSpec.feature "the merchant invoices show page" do
         expect(page).to have_content("Total Revenue of Invoice: $250.00")
         expect(page).to have_content("Total Discounted Revenue of Invoice: $210.00")
       end
+    end
 
+    it "FINAL - Displays a link to the applied discount" do
+      merchant_1 = Merchant.create(name: "merchant1")
+      item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+      item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+      item_3 = Item.create(name: "item3", description: "1", unit_price: 1000, merchant: merchant_1)
+      invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+      invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+      invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+      invoice_item_3 = InvoiceItem.create(item: item_3, invoice: invoice_1, quantity: 5, unit_price: 1000, status: 0)
+      bulk_discount_1 = BulkDiscount.create(name: "10% off 10 items", percentage: 0.10, item_threshold: 10, merchant: merchant_1)
+      bulk_discount_2 = BulkDiscount.create(name: "20% off 20 items", percentage: 0.20, item_threshold: 10, merchant: merchant_1)
+      visit merchant_invoice_path(merchant_1, invoice_1)
+
+      within "#invoice-item-#{invoice_item_1.id}" do
+        expect(page).to have_link("Applied Discount")
+        click_link("Applied Discount")
+        expect(current_path).to eq(merchant_bulk_discount_path(merchant_1, bulk_discount_2))
+      end
+
+      visit merchant_invoice_path(merchant_1, invoice_1)
+      within "#invoice-item-#{invoice_item_3.id}" do
+        expect(page).to_not have_link("Applied Discount")
+      end
     end
   end
 end
