@@ -57,4 +57,19 @@ RSpec.describe Invoice, type: :model do
       expect(invoice_1.total_revenue).to eq(1030.29)
     end
   end
+
+  describe "instance methods" do
+    describe "#revenue_for_specific_invoice" do
+      it "returns the total revenue for a specific invoice" do
+        merchant_1 = Merchant.create(name: "merchant1")
+        item_1 = Item.create(name: "item1", description: "1", unit_price: 10, merchant: merchant_1)
+        item_2 = Item.create(name: "item2", description: "1", unit_price: 10, merchant: merchant_1)
+        invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+        invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 10, unit_price: 10, status: 0)
+        invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 10, unit_price: 10, status: 0)
+
+        expect(invoice_1.revenue_for_specific_invoice(merchant_1)).to eq(200)
+      end 
+    end
+  end
 end
