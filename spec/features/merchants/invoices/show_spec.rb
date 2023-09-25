@@ -86,6 +86,25 @@ RSpec.feature "the merchant invoices show page" do
       end
     end
 
+    it "FINAL - US6 - does not display the total discounted revenue if there are no discounts" do
+      merchant_1 = Merchant.create(name: "merchant1")
+      item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+      item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+      item_3 = Item.create(name: "item3", description: "1", unit_price: 1000, merchant: merchant_1)
+      invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+      invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 9, unit_price: 1000, status: 0)
+      invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 9, unit_price: 1000, status: 0)
+      invoice_item_3 = InvoiceItem.create(item: item_3, invoice: invoice_1, quantity: 5, unit_price: 1000, status: 0)
+      bulk_discount_1 = BulkDiscount.create(name: "10% off 10 items", percentage: 0.10, item_threshold: 10, merchant: merchant_1)
+      bulk_discount_2 = BulkDiscount.create(name: "20% off 20 items", percentage: 0.20, item_threshold: 10, merchant: merchant_1)
+      visit merchant_invoice_path(merchant_1, invoice_1)
+
+      within "#revenues" do
+        expect(page).to have_content("Total Revenue of Invoice: $230.00")
+        expect(page).to_not have_content("Total Discounted Revenue of Invoice:")
+      end
+    end
+
     it "FINAL - Displays a link to the applied discount" do
       merchant_1 = Merchant.create(name: "merchant1")
       item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
