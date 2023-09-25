@@ -5,7 +5,6 @@ class Item < ApplicationRecord
   has_many :transactions, through: :invoices
   has_many :bulk_discounts, through: :merchant
 
-  
   validates :name, presence: true
   validates :description, presence: true 
   validates :unit_price, presence: true

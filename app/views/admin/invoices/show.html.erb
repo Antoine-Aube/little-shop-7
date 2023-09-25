@@ -10,7 +10,12 @@
 
 <p><b>Status:</b> <%= @invoice.status.capitalize %></p>
 <p><b>Created on:</b> <%= @invoice.created_at.strftime("%A, %B %d, %Y") %>
-<p><b>Total Revenue:</b> <%= number_to_currency(@invoice.total_revenue) %>
+<section id="revenues">
+<p><b>Total Revenue of Invoice:</b> <%= number_to_currency(@invoice.total_revenue) %>
+<% if @invoice.discounts_for_specific_invoice_admin != 0 %>
+<p><b>Total Discounted Revenue of Invoice:</b> <%= number_to_currency(@invoice.discounted_revenue_for_specific_invoice_admin) %>
+<% end %>
+</section>
 
 
 <h4>Customer:</h4>

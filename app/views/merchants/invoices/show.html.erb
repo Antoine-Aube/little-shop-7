@@ -41,6 +41,6 @@
 <section id="revenues">
   <p> Total Revenue of Invoice: <%= number_to_currency(@invoice.total_revenue) %> </p>
   <% if @invoice.discounts_for_specific_invoice(@merchant) != 0 %>
-  <p> Total Discounted Revenue of Invoice: <%= number_to_currency(@invoice.discounted_revenue_for_specific_invoice(@merchant)/100.0) %> </p>
+  <p> Total Discounted Revenue of Invoice: <%= number_to_currency(@invoice.discounted_revenue_for_specific_invoice(@merchant)) %> </p>
   <% end %>
 </section>
