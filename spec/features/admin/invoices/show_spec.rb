@@ -67,7 +67,7 @@ RSpec.feature "the admin/invoices show page" do
       invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 2, unit_price: 34343, status: 1)
       visit admin_invoice_path(invoice_1.id)
 
-      expect(page).to have_content("Total Revenue: $1,030.29")
+      expect(page).to have_content("Total Revenue of Invoice: $1,030.29")
     end
 
     it "US 36 has a for to update the invoice status" do
@@ -84,6 +84,44 @@ RSpec.feature "the admin/invoices show page" do
 
       expect(current_path).to eq(admin_invoice_path(invoice_1))
       expect(page).to have_select(:status, selected: "in progress")
+    end
+
+    it "FINAL - US8 displays the total revenue with discounts for the invoice" do
+      merchant_1 = Merchant.create(name: "merchant1")
+      item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+      item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+      item_3 = Item.create(name: "item3", description: "1", unit_price: 1000, merchant: merchant_1)
+      invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+      invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+      invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+      invoice_item_3 = InvoiceItem.create(item: item_3, invoice: invoice_1, quantity: 5, unit_price: 1000, status: 0)
+      bulk_discount_1 = BulkDiscount.create(name: "10% off 10 items", percentage: 0.10, item_threshold: 10, merchant: merchant_1)
+      bulk_discount_2 = BulkDiscount.create(name: "20% off 20 items", percentage: 0.20, item_threshold: 10, merchant: merchant_1)
+      visit admin_invoice_path(invoice_1)
+
+      within "#revenues" do
+        expect(page).to have_content("Total Revenue of Invoice: $250.00")
+        expect(page).to have_content("Total Discounted Revenue of Invoice: $210.00")
+      end
+    end
+
+    it "does not display the total discounted revenue if there are no discounts" do
+      merchant_1 = Merchant.create(name: "merchant1")
+      item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+      item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+      item_3 = Item.create(name: "item3", description: "1", unit_price: 1000, merchant: merchant_1)
+      invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+      invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 9, unit_price: 1000, status: 0)
+      invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 9, unit_price: 1000, status: 0)
+      invoice_item_3 = InvoiceItem.create(item: item_3, invoice: invoice_1, quantity: 5, unit_price: 1000, status: 0)
+      bulk_discount_1 = BulkDiscount.create(name: "10% off 10 items", percentage: 0.10, item_threshold: 10, merchant: merchant_1)
+      bulk_discount_2 = BulkDiscount.create(name: "20% off 20 items", percentage: 0.20, item_threshold: 10, merchant: merchant_1)
+      visit admin_invoice_path(invoice_1)
+
+      within "#revenues" do
+        expect(page).to have_content("Total Revenue of Invoice: $230.00")
+        expect(page).to_not have_content("Total Discounted Revenue of Invoice: ")
+      end
     end
   end
 end

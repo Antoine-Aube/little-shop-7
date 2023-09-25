@@ -2,10 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Invoice, type: :model do
   describe 'relationships' do
-    it { should belong_to :customer }
-    it { should have_many :invoice_items }
-    it { should have_many :transactions }
+    it { should have_many(:invoice_items) }
+    it { should belong_to(:customer) }
+    it { should have_many(:transactions) }
     it { should have_many(:items).through(:invoice_items) }
+    it { should have_many(:merchants).through(:items) }
+    it { should have_many(:bulk_discounts).through(:merchants) }
   end
 
   describe 'validations' do
@@ -53,6 +55,105 @@ RSpec.describe Invoice, type: :model do
       invoice_item_1 = InvoiceItem.create(item: item_1, invoice: invoice_1, quantity: 1, unit_price: 34343, status: 0)
       invoice_item_2 = InvoiceItem.create(item: item_1, invoice: invoice_1, quantity: 2, unit_price: 34343, status: 1)
       expect(invoice_1.total_revenue).to eq(1030.29)
+    end
+  end
+
+  describe "instance methods" do
+    describe "#revenue_for_specific_invoice" do
+      it "returns the total revenue for a specific invoice" do
+        merchant_1 = Merchant.create(name: "merchant1")
+        item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+        invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+        invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+
+        expect(invoice_1.revenue_for_specific_invoice(merchant_1)).to eq(200)
+      end 
+    end
+
+    describe "#discount_for_specific_invoice" do
+      it "returns the total discounts for a specific invoice, adjusts according to best discount available" do
+        merchant_1 = Merchant.create(name: "merchant1")
+        item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_3 = Item.create(name: "item3", description: "1", unit_price: 1000, merchant: merchant_1)
+        invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+        invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_3 = InvoiceItem.create(item: item_3, invoice: invoice_1, quantity: 5, unit_price: 1000, status: 0)
+        bulk_discount_1 = BulkDiscount.create(name: "10% off 10 items", percentage: 0.10, item_threshold: 10, merchant: merchant_1)
+        bulk_discount_2 = BulkDiscount.create(name: "20% off 20 items", percentage: 0.20, item_threshold: 10, merchant: merchant_1)
+
+        expect(invoice_1.discounts_for_specific_invoice(merchant_1)).to eq(40)
+
+        bulk_discount_3 = BulkDiscount.create(name: "30% off 30 items", percentage: 0.30, item_threshold: 10, merchant: merchant_1)
+
+        expect(invoice_1.discounts_for_specific_invoice(merchant_1)).to eq(60)
+      end 
+    end
+
+    describe "#discounted_revenue_for_specific_invoice" do
+      it "subtracts the discount total from the invoice total" do 
+        merchant_1 = Merchant.create(name: "merchant1")
+        item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_3 = Item.create(name: "item3", description: "1", unit_price: 1000, merchant: merchant_1)
+        invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+        invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_3 = InvoiceItem.create(item: item_3, invoice: invoice_1, quantity: 5, unit_price: 1000, status: 0)
+        bulk_discount_1 = BulkDiscount.create(name: "10% off 10 items", percentage: 0.10, item_threshold: 10, merchant: merchant_1)
+        bulk_discount_2 = BulkDiscount.create(name: "20% off 10 items", percentage: 0.20, item_threshold: 10, merchant: merchant_1)
+
+        expect(invoice_1.discounted_revenue_for_specific_invoice(merchant_1)).to eq(210)
+
+        bulk_discount_3 = BulkDiscount.create(name: "30% off 10 items", percentage: 0.30, item_threshold: 10, merchant: merchant_1)
+
+        expect(invoice_1.discounted_revenue_for_specific_invoice(merchant_1)).to eq(190)
+      end
+    end
+
+    describe "#discounts_for_specific_invoice_admin" do
+      it "returns the total discounts for a specific invoice, adjusts according to best discount available" do
+        merchant_1 = Merchant.create(name: "merchant1")
+        item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_3 = Item.create(name: "item3", description: "1", unit_price: 1000, merchant: merchant_1)
+        invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+        invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_3 = InvoiceItem.create(item: item_3, invoice: invoice_1, quantity: 5, unit_price: 1000, status: 0)
+        bulk_discount_1 = BulkDiscount.create(name: "10% off 10 items", percentage: 0.10, item_threshold: 10, merchant: merchant_1)
+        bulk_discount_2 = BulkDiscount.create(name: "20% off 10 items", percentage: 0.20, item_threshold: 10, merchant: merchant_1)
+
+        expect(invoice_1.discounts_for_specific_invoice_admin).to eq(40)
+
+        bulk_discount_3 = BulkDiscount.create(name: "30% off 10 items", percentage: 0.30, item_threshold: 10, merchant: merchant_1)
+
+        expect(invoice_1.discounts_for_specific_invoice_admin).to eq(60)
+      end
+    end
+
+    describe "#discounted_revenue_for_specific_invoice_admin" do
+      it "subtracts the discount total from the invoice total" do
+        merchant_1 = Merchant.create(name: "merchant1")
+        item_1 = Item.create(name: "item1", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_2 = Item.create(name: "item2", description: "1", unit_price: 1000, merchant: merchant_1)
+        item_3 = Item.create(name: "item3", description: "1", unit_price: 1000, merchant: merchant_1)
+        invoice_1 = Invoice.create(customer: Customer.create(first_name: "Joey", last_name:"One"), status: 0)
+        invoice_item_1 = InvoiceItem.create(item: item_1,invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_2 = InvoiceItem.create(item: item_2, invoice: invoice_1, quantity: 10, unit_price: 1000, status: 0)
+        invoice_item_3 = InvoiceItem.create(item: item_3, invoice: invoice_1, quantity: 5, unit_price: 1000, status: 0)
+        bulk_discount_1 = BulkDiscount.create(name: "10% off 10 items", percentage: 0.10, item_threshold: 10, merchant: merchant_1)
+        bulk_discount_2 = BulkDiscount.create(name: "20% off 10 items", percentage: 0.20, item_threshold: 10, merchant: merchant_1)
+
+        expect(invoice_1.discounted_revenue_for_specific_invoice_admin).to eq(210)
+
+        bulk_discount_3 = BulkDiscount.create(name: "30% off 10 items", percentage: 0.30, item_threshold: 10, merchant: merchant_1)
+
+        expect(invoice_1.discounted_revenue_for_specific_invoice_admin).to eq(190)
+      end
     end
   end
 end
