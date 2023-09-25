@@ -23,12 +23,6 @@ class Invoice < ApplicationRecord
     invoice_items.sum("unit_price * quantity") / 100.0
   end
 
-  def revenue_for_specific_invoice(merch)
-    invoice_items.joins(:item)
-    .where("merchant_id = ?", merch.id)
-    .sum("invoice_items.quantity*invoice_items.unit_price")/100.0
-  end
-
   def discounts_for_specific_invoice(merch)
     Invoice
     .select("quantity, unit_price, best_discount")
@@ -41,7 +35,7 @@ class Invoice < ApplicationRecord
   end
 
   def discounted_revenue_for_specific_invoice(merch)
-    revenue_for_specific_invoice(merch) - discounts_for_specific_invoice(merch)
+    total_revenue - discounts_for_specific_invoice(merch)
   end
 
   def discounts_for_specific_invoice_admin
