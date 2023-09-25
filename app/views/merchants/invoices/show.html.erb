@@ -30,6 +30,9 @@
             <%= select_tag :item_status, options_for_select([['packaged', 'packaged'], ['pending', 'pending'], ['shipped', 'shipped']], invoice_item.status) %>
             <%= f.submit 'Update Item Status' %>
             <% end %></td>
+      <% if invoice_item.applied_discount != nil %>
+        <td><%= link_to "Applied Discount", merchant_bulk_discount_path(@merchant, invoice_item.applied_discount) %></td>
+      <% end %>
       </tr>
     <% end %>
   </tbody>
