@@ -3,7 +3,7 @@
 <% if @merchant.bulk_discounts.empty? %>
   <p>There are no discounts for this merchant.</p>
 <% else %>
-<div class= "table-container">
+<div id="discounts-table" class= "table-container">
 <table class="table-style">
   <thead>
     <tr>
@@ -27,4 +27,9 @@
   </tbody>
 </table>
 </div>
+<% end %>
+
+<h2>Upcoming Holidays</h2>
+<% @upcoming_holidays.each do |holiday| %>
+  <p><%= holiday.name %> - <%= holiday.date %></p>
 <% end %>
