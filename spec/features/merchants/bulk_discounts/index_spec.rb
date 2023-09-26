@@ -43,18 +43,26 @@ RSpec.describe 'Bulk Discount Index Page' do
 
         visit merchant_bulk_discounts_path(@merchant)
 
-        within("#discount-#{@discount_1.id}") do
-          click_button("Delete Discount")
+        within("#discounts-table") do
+          within("#discount-#{@discount_1.id}") do
+            click_button("Delete Discount")
+            expect(current_path).to eq(merchant_bulk_discounts_path(@merchant))
+          end 
         end 
 
-        expect(current_path).to eq(merchant_bulk_discounts_path(@merchant))
-        expect(page).to_not have_content(@discount_1.name)
-        expect(page).to_not have_content("20%")
-        expect(page).to_not have_content(@discount_1.item_threshold)
-
-        expect(page).to have_content(@discount_2.name)
-        expect(page).to have_content("30%")
-        expect(page).to have_content(@discount_2.item_threshold)
+        within("#discounts-table") do
+          expect(page).to_not have_content(@discount_1.name)
+          expect(page).to_not have_content("20%")
+          expect(page).to_not have_content(@discount_1.item_threshold)
+        end 
+      
+        within("#discounts-table") do
+          within("#discount-#{@discount_2.id}") do
+            expect(page).to have_content(@discount_2.name)
+            expect(page).to have_content("30%")
+            expect(page).to have_content(@discount_2.item_threshold)
+          end 
+        end 
       end
     end
 end
