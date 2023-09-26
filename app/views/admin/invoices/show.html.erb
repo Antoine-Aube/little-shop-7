@@ -12,8 +12,8 @@
 <p><b>Created on:</b> <%= @invoice.created_at.strftime("%A, %B %d, %Y") %>
 <section id="revenues">
 <p><b>Total Revenue of Invoice:</b> <%= number_to_currency(@invoice.total_revenue) %>
-<% if @invoice.discounts_for_specific_invoice_admin != 0 %>
-<p><b>Total Discounted Revenue of Invoice:</b> <%= number_to_currency(@invoice.discounted_revenue_for_specific_invoice_admin) %>
+<% if @invoice.discounts_for_specific_invoice != 0 %>
+<p><b>Total Discounted Revenue of Invoice:</b> <%= number_to_currency(@invoice.discounted_revenue_for_specific_invoice) %>
 <% end %>
 </section>
 
